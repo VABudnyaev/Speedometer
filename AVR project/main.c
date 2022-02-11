@@ -1,5 +1,5 @@
 /*
- * Frequency-meter.c
+ * Speedometer.c
  *
  * Created: 10.02.2022 19:09:19
  * Author : vadim
@@ -26,6 +26,15 @@ unsigned long count_pulses = 0;
 
 int count_10 = 0;
 double average_time = 0;
+
+//constants for speed calculation
+const int R_WHEEL = 50; // radius in cm
+const int HOUR_1 = 3600; // 1 hour in s
+const int HOLES = 4; // number of holes in the disc
+const long KM_IN_CM = 100000; //1km in cm
+const float pi = 3.14;
+
+
 
 void digits(int digit)
 {
@@ -131,9 +140,9 @@ ISR(INT0_vect)
 	TCNT1 = 0;
 	count_interrupts = 0;
 	count_10++;
-	if(count_10 >= 10)
+	if(count_10 >= 3)
 	{
-		average_time = (float)count_pulses/10.0;
+		average_time = (float)count_pulses/3;
 		count_pulses = 0;
 		count_10 = 0;
 	}
@@ -183,8 +192,7 @@ int main(void)
 	
 	while (1)
 	{
-		number((double)8000000.0/average_time); //Frequency meter
-		//number(1234); //test
+		number(((double)8000000.0/average_time) * HOUR_1 * 2 * pi * R_WHEEL/HOLES/KM_IN_CM); //Speed in km/h
 		
 	}
 }
